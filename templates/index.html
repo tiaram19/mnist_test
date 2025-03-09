@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Handwritten Number Classification</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        text-align: center;
+        background: linear-gradient(135deg, #6b78ec, #c4f4fa);
+        color: #fff;
+        padding: 50px;
+      }
+      .container {
+        max-width: 500px;
+        margin: auto;
+        padding: 20px;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+        border-radius: 15px;
+        background-color: #fff;
+        color: #333;
+      }
+      img {
+        max-width: 100%;
+        margin-top: 10px;
+        border-radius: 10px;
+      }
+      .btn-custom {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        border: none;
+        transition: 0.3s;
+      }
+      .btn-custom:hover {
+        background: linear-gradient(135deg, #764ba2, #667eea);
+      }
+      .footer {
+        margin-top: 50px;
+        color: #fff;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Handwritten Number Classification</h1>
+    <h2>Model Menggunakan Dataset MNIST dari Keras</h2>
+    <div class="container text-center">
+      <h1 class="mb-4">Upload an Image for Prediction</h1>
+      <input type="file" id="fileInput" class="form-control mb-3" accept="image/*" />
+      <img id="preview" class="img-fluid rounded shadow" src="#" alt="Image Preview" style="display: none" />
+      <button class="btn btn-custom mt-3" onclick="uploadImage()">Predict</button>
+      <h2 id="result" class="mt-4 text-primary fw-bold"></h2>
+    </div>
+
+    <footer class="footer text-center">
+      <p>&copy; Tiara 2025 Image Classifier | Powered by Flask & TensorFlow</p>
+    </footer>
+
+    <script>
+      document.getElementById("fileInput").addEventListener("change", function (event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            document.getElementById("preview").src = e.target.result;
+            document.getElementById("preview").style.display = "block";
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      function uploadImage() {
+        const fileInput = document.getElementById("fileInput");
+        if (!fileInput.files[0]) {
+          alert("Please select an image first.");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+
+        fetch("/predict", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("result").innerText = "Prediction: " + data.prediction;
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            document.getElementById("result").innerText = "Error in prediction";
+          });
+      }
+    </script>
+  </body>
+</html>
